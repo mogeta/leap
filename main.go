@@ -12,9 +12,10 @@ import (
 const (
 	StateStart  = "start"
 	StateUpdate = "update"
-	StateEnd    = "end"
+	StateStop   = "stop"
 
-	TypeSwipe = "swipe"
+	TypeSwipe  = "swipe"
+	TypeCircle = "circle"
 )
 
 func main() {
@@ -26,7 +27,11 @@ func main() {
 	work := func() {
 		gobot.On(l.Event("message"), func(data interface{}) {
 			if len(data.(leap.Frame).Gestures) > 0 {
-				fmt.Println(data.(leap.Frame).Gestures)
+
+				if data.(leap.Frame).Gestures[0].State == StateStop {
+					fmt.Println(data.(leap.Frame).Gestures[0].Type)
+				}
+
 			}
 
 		})
