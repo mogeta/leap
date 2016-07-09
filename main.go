@@ -18,6 +18,8 @@ const (
 	TypeCircle = "circle"
 )
 
+var messages = make(chan string)
+
 func main() {
 	gbot := gobot.NewGobot()
 
@@ -26,12 +28,13 @@ func main() {
 
 	work := func() {
 		gobot.On(l.Event("message"), func(data interface{}) {
+			fmt.Println(data.(leap.Frame).ID)
 			if len(data.(leap.Frame).Gestures) > 0 {
 
 				if data.(leap.Frame).Gestures[0].State == StateStop {
-					fmt.Println(data.(leap.Frame).Gestures[0].Type)
+					//fmt.Println(data.(leap.Frame).Gestures[0].Type)
+					messages <- data.(leap.Frame).Gestures[0].Type
 				}
-
 			}
 
 		})
@@ -43,7 +46,14 @@ func main() {
 		work,
 	)
 
+	go allocate()
 	gbot.AddRobot(robot)
-
 	gbot.Start()
+}
+
+func allocate() {
+	for {
+		msg := <-messages
+		fmt.Println(msg)
+	}
 }
