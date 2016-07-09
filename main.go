@@ -19,6 +19,8 @@ const (
 )
 
 var messages = make(chan string)
+var isWork = false
+var gesture = ""
 
 func main() {
 	gbot := gobot.NewGobot()
@@ -28,13 +30,18 @@ func main() {
 
 	work := func() {
 		gobot.On(l.Event("message"), func(data interface{}) {
-			fmt.Println(data.(leap.Frame).ID)
+			//fmt.Println(data.(leap.Frame).ID)
 			if len(data.(leap.Frame).Gestures) > 0 {
-
+				isWork = true
 				if data.(leap.Frame).Gestures[0].State == StateStop {
 					//fmt.Println(data.(leap.Frame).Gestures[0].Type)
-					messages <- data.(leap.Frame).Gestures[0].Type
+					//messages <- data.(leap.Frame).Gestures[0].Type
+					gesture = data.(leap.Frame).Gestures[0].Type
 				}
+			} else if isWork {
+				isWork = false
+				messages <- gesture
+				fmt.Println("end")
 			}
 
 		})
