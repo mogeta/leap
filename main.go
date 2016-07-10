@@ -1,6 +1,6 @@
 //
 // start -> update ->end
-package main
+package leap
 
 import (
 	"fmt"
@@ -18,11 +18,24 @@ const (
 	TypeCircle = "circle"
 )
 
+type Action interface {
+	swipe()
+	circle()
+}
+
+type LeapMotion struct {
+	act Action
+}
+
 var messages = make(chan string)
 var isWork = false
 var gesture = ""
 
-func main() {
+func New() *LeapMotion {
+	return &LeapMotion{}
+}
+
+func (lp *LeapMotion) start() {
 	gbot := gobot.NewGobot()
 
 	leapMotionAdaptor := leap.NewLeapMotionAdaptor("leap", "127.0.0.1:6437")
@@ -53,14 +66,21 @@ func main() {
 		work,
 	)
 
-	go allocate()
+	go lp.allocate()
 	gbot.AddRobot(robot)
 	gbot.Start()
 }
 
-func allocate() {
+func (lp *LeapMotion) allocate() {
 	for {
 		msg := <-messages
+
+		switch msg {
+		case TypeSwipe:
+			break
+		case TypeCircle:
+			break
+		}
 		fmt.Println(msg)
 	}
 }
