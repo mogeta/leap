@@ -19,8 +19,8 @@ const (
 )
 
 type Action interface {
-	swipe()
-	circle()
+	Swipe()
+	Circle()
 }
 
 type LeapMotion struct {
@@ -31,11 +31,11 @@ var messages = make(chan string)
 var isWork = false
 var gesture = ""
 
-func New() *LeapMotion {
-	return &LeapMotion{}
+func New(a Action) *LeapMotion {
+	return &LeapMotion{a}
 }
 
-func (lp *LeapMotion) start() {
+func (lp *LeapMotion) Start() {
 	gbot := gobot.NewGobot()
 
 	leapMotionAdaptor := leap.NewLeapMotionAdaptor("leap", "127.0.0.1:6437")
@@ -77,8 +77,10 @@ func (lp *LeapMotion) allocate() {
 
 		switch msg {
 		case TypeSwipe:
+			lp.act.Swipe()
 			break
 		case TypeCircle:
+			lp.act.Circle()
 			break
 		}
 		fmt.Println(msg)
